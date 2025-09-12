@@ -1,0 +1,20 @@
+{
+  "name": "camerbus-app",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "node ace serve --watch",
+    "build": "node ace build --production",
+    "start": "node server.js",
+    "test": "node ace test",
+    "lint": "eslint . --ext=.ts"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:adonis/typescriptApp"
+    ]
+  },
+  "eslintIgnore": [
+    "build"
+  ]
+}
