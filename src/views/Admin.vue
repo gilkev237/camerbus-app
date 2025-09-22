@@ -476,7 +476,7 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-neutral-600">Dernière maintenance:</span>
-                <span class="font-medium">{{ formatDate(bus.lastMaintenance) }}</span>
+                <span class="font-medium">{{ formatDate(bus.lastMaintenance!) }}</span>
               </div>
             </div>
 
@@ -539,7 +539,7 @@
                   ></div>
                   <div>
                     <div class="font-medium text-neutral-800">{{ ticket.subject }}</div>
-                    <div class="text-sm text-neutral-600">{{ ticket.user }} • {{ formatTime(ticket.created) }}</div>
+                    <div class="text-sm text-neutral-600">{{ ticket.userId }} • {{ ticket.createdAt ? formatTime(new Date(ticket.createdAt)) : 'date inconnue'}}</div>
                   </div>
                 </div>
                 <div class="flex items-center space-x-2">
@@ -551,7 +551,7 @@
                       'bg-green-100 text-green-800'
                     ]"
                   >
-                    {{ getTicketStatusText(ticket.status) }}
+                    {{ getTicketStatusText(ticket.status!) }}
                   </span>
                   <button class="text-primary-600 hover:text-primary-700 transition-colors font-medium text-sm">
                     Répondre
@@ -615,11 +615,12 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { listSchedules, listBuses, listBookings, listSupportTickets } from '@/services/api'
-import type { Booking } from '@/services/bookingService'
+import type { Schedule, Bus, Booking, SupportTicket } from '@/types/api'
 
 // State
 const activeTab = ref('dashboard')
 
+const showAddRouteModal = ref(false)
 // Admin tabs configuration
 const adminTabs = ref([
   { id: 'dashboard', name: 'Tableau de bord', icon: 'M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z', badge: null },
@@ -631,10 +632,10 @@ const adminTabs = ref([
 ])
 
 // Data sources
-const schedules = ref<any[]>([])
-const buses = ref<any[]>([])
-const bookings = ref<any[]>([])
-const tickets = ref<any[]>([])
+const schedules = ref<Schedule[]>([])
+const buses = ref<Bus[]>([])
+const bookings = ref<Booking[]>([])
+const SupportTicket = ref<SupportTicket[]>([])
 
 // Dashboard metrics
 const metrics = ref({
@@ -665,13 +666,14 @@ const recentActivities = ref([
 
 // Routes management (from schedules)
 const routeFilters = ref({ search: '', status: '', departure: '' })
-const routes = computed(() => schedules.value.map((s: any) => ({
+interface AdminRouteRow { id: number; departure: string; destination: string; distance: number; departureTime: string; arrivalTime: string; frequency: string; price: number; busNumber: string; busType: string; status: string }
+const routes = computed<AdminRouteRow[]>(() => schedules.value.map((s) => ({
   id: s.id,
   departure: s.route?.departureCity?.name || '',
   destination: s.route?.destinationCity?.name || '',
-  distance: s.route?.distanceKm || s.route?.distance_km || 0,
-  departureTime: new Date(s.departureAt || s.departure_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  arrivalTime: new Date(s.arrivalAt || s.arrival_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  distance: (s.route?.distanceKm as number) || 0,
+  departureTime: new Date(s.departureAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  arrivalTime: new Date(s.arrivalAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
   frequency: '',
   price: Number(s.price || s.route?.basePrice || 0),
   busNumber: s.bus?.number || '',
@@ -691,15 +693,16 @@ const bookingStats = computed(() => {
   return counts
 })
 
-const recentBookings = computed(() => bookings.value.slice(0, 20).map((b: any) => ({
+interface AdminBookingRow { id: number; reference: string; clientName: string; clientPhone: string; route: string; date: string; time: string; seats: string[]; amount: number; status: string }
+const recentBookings = computed<AdminBookingRow[]>(() => bookings.value.slice(0, 20).map((b) => ({
   id: b.id,
   reference: b.reference,
   clientName: b.user?.fullName || '',
   clientPhone: b.user?.phone || '',
   route: `${b.schedule?.route?.departureCity?.name || ''} → ${b.schedule?.route?.destinationCity?.name || ''}`,
-  date: (b.schedule?.departureAt || b.schedule?.departure_at || '').slice(0, 10),
-  time: new Date(b.schedule?.departureAt || b.schedule?.departure_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-  seats: Array.isArray(b.passengers) ? b.passengers.map((p: any) => p.seat).filter(Boolean) : [],
+  date: (b.schedule?.departureAt || '').slice(0, 10),
+  time: new Date(b.schedule?.departureAt || '').toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+  seats: Array.isArray(b.passengers) ? b.passengers.map((p) => p.seat).filter(Boolean) : [],
   amount: Number(b.totalPrice || 0),
   status: b.status || 'pending'
 })))
@@ -715,14 +718,15 @@ const fleetStats = computed(() => {
   return stats
 })
 
-const fleetList = computed(() => buses.value.map((bus: any) => ({
+interface FleetRow { id: number; number: string; type: string; capacity: number; status: string; currentRoute: string | null; lastMaintenance?: string }
+const fleetList = computed<FleetRow[]>(() => buses.value.map((bus) => ({
   id: bus.id,
   number: bus.number,
   type: bus.type,
   capacity: bus.capacity,
   status: bus.status,
   currentRoute: null,
-  lastMaintenance: bus.lastMaintenance || bus.last_maintenance || ''
+  lastMaintenance: bus.lastMaintenance
 })))
 
 // Users management (derived from bookings)
@@ -738,7 +742,12 @@ const userStats = computed(() => {
     const uid = b.userId || b.user?.id
     if (!uid) continue
     uniqueAll.add(uid)
-    const dep = new Date(b.schedule?.departureAt || b.schedule?.departure_at || b.createdAt || b.created_at)
+    const dep = new Date(
+     b.schedule?.departure_at ??
+     b.schedule?.departureAt ??
+     b.created_at ??
+     b.createdAt ?? ''
+    )
     if ((now.getTime() - dep.getTime()) <= 30 * 24 * 3600 * 1000) unique30.add(uid)
     if (b.user?.level && ['Gold', 'Diamond'].includes(b.user.level)) vip.add(uid)
     const prev = firstSeen.get(uid)
@@ -756,7 +765,7 @@ const userStats = computed(() => {
   }
 })
 
-const supportTickets = ref<any[]>([])
+const supportTickets = ref<SupportTicket[]>([])
 
 // Analytics (basic derivation)
 const analytics = ref({ totalRevenue: 0, totalTrips: 0, avgOccupancy: 0, customerSatisfaction: 4.6 })
@@ -833,28 +842,21 @@ async function loadAll() {
     listBookings(),
     listSupportTickets()
   ])
-  schedules.value = Array.isArray(sch) ? sch : []
-  buses.value = Array.isArray(busList) ? busList : []
-  bookings.value = Array.isArray(bks) ? bks : []
-  supportTickets.value = Array.isArray(tks) ? tks.map((t: any) => ({
-    id: t.id,
-    subject: t.subject,
-    user: t.userId ? `#${t.userId}` : 'Anonyme',
-    priority: t.priority || 'medium',
-    status: t.status || 'open',
-    created: new Date(t.createdAt || t.created_at)
-  })) : []
+  schedules.value = Array.isArray(sch) ? sch as Schedule[] : []
+  buses.value = Array.isArray(busList) ? busList as Bus[] : []
+  bookings.value = Array.isArray(bks) ? bks as Booking[] : []
+  supportTickets.value = Array.isArray(tks) ? tks as SupportTicket[] : []
 
   // Metrics
   const todayStr = new Date().toISOString().slice(0, 10)
   metrics.value.totalBuses = buses.value.length
-  metrics.value.activeBuses = buses.value.filter((b: any) => b.status === 'operational').length
-  const todayBookings = bookings.value.filter((b: any) => {
-    const d = String(b.createdAt || b.created_at || b.schedule?.departureAt || b.schedule?.departure_at)
+  metrics.value.activeBuses = buses.value.filter((b) => b.status === 'operational').length
+  const todayBookings = bookings.value.filter((b) => {
+    const d = String(b.createdAt || b.schedule?.departureAt || '')
     return d.startsWith(todayStr)
   })
   metrics.value.todayBookings = todayBookings.length
-  const todayRevenue = todayBookings.reduce((sum: number, b: any) => {
+  const todayRevenue = todayBookings.reduce((sum: number, b) => {
     const completed = (b.paymentStatus || '').toLowerCase() === 'completed' || (b.payment?.status || '').toLowerCase() === 'completed'
     return sum + (completed ? Number(b.payment?.amount || b.totalPrice || 0) : 0)
   }, 0)
@@ -862,17 +864,18 @@ async function loadAll() {
 
   // Users
   const now = Date.now()
-  const last7 = bookings.value.filter((b: any) => new Date(b.createdAt || b.created_at).getTime() >= now - 7*24*3600*1000).length
-  const prev7 = bookings.value.filter((b: any) => {
-    const t = new Date(b.createdAt || b.created_at).getTime()
+  const last7 = bookings.value.filter((b) => new Date(b.createdAt || '').getTime() >= now - 7*24*3600*1000).length
+  const prev7 = bookings.value.filter((b) => {
+    const t = new Date(b.createdAt || '').getTime()
     return t < now - 7*24*3600*1000 && t >= now - 14*24*3600*1000
   }).length
   metrics.value.bookingGrowth = prev7 ? Math.round(((last7 - prev7) / prev7) * 100) : (last7 > 0 ? 100 : 0)
 
   const active30Users = new Set<number>()
   for (const b of bookings.value) {
-    const t = new Date(b.createdAt || b.created_at).getTime()
-    if (now - t <= 30*24*3600*1000) active30Users.add(b.userId || b.user?.id)
+    const t = new Date(b.createdAt || '').getTime()
+    const uid = b.userId || b.user?.id
+    if (uid && now - t <= 30*24*3600*1000) active30Users.add(uid)
   }
   metrics.value.activeUsers = active30Users.size
 }

@@ -121,13 +121,13 @@
           <div class="bg-white rounded-xl shadow-soft p-6">
             <h3 class="text-lg font-semibold text-neutral-800 mb-6">Réservations récentes</h3>
             <div class="space-y-4">
-              <div 
-                v-for="booking in recentBookings" 
+              <div
+                v-for="booking in recentBookings"
                 :key="booking.id"
                 class="flex items-center justify-between p-4 bg-neutral-50 rounded-lg"
               >
                 <div class="flex items-center space-x-4">
-                  <div 
+                  <div
                     :class="[
                       'w-3 h-3 rounded-full',
                       booking.status === 'completed' ? 'bg-green-500' :
@@ -146,8 +146,8 @@
                 </div>
               </div>
             </div>
-            <router-link 
-              to="#" 
+            <router-link
+              to="#"
               @click.prevent="activeTab = 'bookings'"
               class="block w-full text-center mt-4 py-2 px-4 bg-neutral-100 hover:bg-neutral-200 text-neutral-700 font-medium rounded-lg transition-colors duration-200"
             >
@@ -158,7 +158,7 @@
           <!-- Loyalty Program -->
           <div class="bg-gradient-to-br from-primary-50 to-gold-50 rounded-xl shadow-soft p-6">
             <h3 class="text-lg font-semibold text-neutral-800 mb-6">Programme de fidélité</h3>
-            
+
             <!-- Current Level -->
             <div class="mb-6">
               <div class="flex items-center justify-between mb-2">
@@ -166,7 +166,7 @@
                 <span class="text-sm text-neutral-600">{{ loyaltyPoints }}/{{ nextLevelPoints }} points</span>
               </div>
               <div class="w-full bg-neutral-200 rounded-full h-2">
-                <div 
+                <div
                   class="bg-gradient-to-r from-primary-500 to-gold-500 h-2 rounded-full transition-all duration-300"
                   :style="{ width: loyaltyProgressPercent + '%' }"
                 ></div>
@@ -180,8 +180,8 @@
             <div class="space-y-3">
               <h4 class="font-medium text-neutral-800">Avantages actuels :</h4>
               <div class="space-y-2">
-                <div 
-                  v-for="benefit in currentBenefits" 
+                <div
+                  v-for="benefit in currentBenefits"
                   :key="benefit"
                   class="flex items-center space-x-2 text-sm text-neutral-700"
                 >
@@ -235,7 +235,7 @@
               </select>
             </div>
             <div class="flex items-end">
-              <button 
+              <button
                 @click="clearFilters"
                 class="w-full py-2 px-4 bg-neutral-200 hover:bg-neutral-300 text-neutral-700 font-medium rounded-lg transition-colors duration-200"
               >
@@ -247,15 +247,15 @@
 
         <!-- Bookings List -->
         <div class="space-y-4">
-          <div 
-            v-for="booking in filteredBookings" 
+          <div
+            v-for="booking in filteredBookings"
             :key="booking.id"
             class="bg-white rounded-xl shadow-soft p-6"
           >
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between">
               <div class="flex-1">
                 <div class="flex items-center space-x-4 mb-4">
-                  <div 
+                  <div
                     :class="[
                       'px-3 py-1 rounded-full text-sm font-medium',
                       booking.status === 'completed' ? 'bg-green-100 text-green-800' :
@@ -267,7 +267,7 @@
                   </div>
                   <span class="text-sm text-neutral-600">Réf: {{ booking.reference }}</span>
                 </div>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
                   <div>
                     <span class="text-neutral-600">Trajet:</span>
@@ -283,7 +283,7 @@
                   </div>
                 </div>
               </div>
-              
+
               <div class="mt-4 lg:mt-0 lg:ml-8 flex flex-col items-end space-y-2">
                 <div class="text-xl font-bold text-neutral-800">{{ booking.price.toLocaleString() }} FCFA</div>
                 <div v-if="booking.status === 'cancelled' && booking.refundAmount" class="text-sm text-green-700">Remboursement: {{ booking.refundAmount.toLocaleString() }} FCFA</div>
@@ -320,48 +320,48 @@
       <div v-if="activeTab === 'personal'" class="space-y-6">
         <div class="bg-white rounded-xl shadow-soft p-6">
           <h3 class="text-lg font-semibold text-neutral-800 mb-6">Informations personnelles</h3>
-          
+
           <form @submit.prevent="updatePersonalInfo" class="space-y-6">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Nom complet</label>
-                <input 
+                <input
                   v-model="editableUserData.fullName"
                   type="text"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Email</label>
-                <input 
+                <input
                   v-model="editableUserData.email"
                   type="email"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Téléphone</label>
-                <input 
+                <input
                   v-model="editableUserData.phone"
                   type="tel"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Date de naissance</label>
-                <input 
+                <input
                   v-model="editableUserData.birthDate"
                   type="date"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Genre</label>
-                <select 
+                <select
                   v-model="editableUserData.gender"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
@@ -371,26 +371,26 @@
                   <option value="Other">Autre</option>
                 </select>
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Ville</label>
-                <input 
+                <input
                   v-model="editableUserData.city"
                   type="text"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
             </div>
-            
+
             <div class="flex justify-end space-x-4">
-              <button 
+              <button
                 type="button"
                 @click="resetPersonalInfo"
                 class="px-6 py-3 border border-neutral-300 text-neutral-700 font-medium rounded-lg hover:bg-neutral-50 transition-colors duration-200"
               >
                 Annuler
               </button>
-              <button 
+              <button
                 type="submit"
                 class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200"
               >
@@ -403,30 +403,30 @@
         <!-- Emergency Contact -->
         <div class="bg-white rounded-xl shadow-soft p-6">
           <h3 class="text-lg font-semibold text-neutral-800 mb-6">Contact d'urgence</h3>
-          
+
           <form @submit.prevent="updateEmergencyContact" class="space-y-4">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Nom du contact</label>
-                <input 
+                <input
                   v-model="emergencyContact.name"
                   type="text"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Téléphone</label>
-                <input 
+                <input
                   v-model="emergencyContact.phone"
                   type="tel"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 />
               </div>
-              
+
               <div>
                 <label class="block text-sm font-medium text-neutral-700 mb-2">Relation</label>
-                <select 
+                <select
                   v-model="emergencyContact.relation"
                   class="w-full px-4 py-3 border border-neutral-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
                 >
@@ -439,9 +439,9 @@
                 </select>
               </div>
             </div>
-            
+
             <div class="flex justify-end">
-              <button 
+              <button
                 type="submit"
                 class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors duration-200"
               >
@@ -457,7 +457,7 @@
         <!-- Notifications -->
         <div class="bg-white rounded-xl shadow-soft p-6">
           <h3 class="text-lg font-semibold text-neutral-800 mb-6">Préférences de notification</h3>
-          
+
           <div class="space-y-4">
             <div class="flex items-center justify-between">
               <div>
@@ -469,7 +469,7 @@
                 <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
-            
+
             <div class="flex items-center justify-between">
               <div>
                 <div class="font-medium text-neutral-800">Rappels de voyage</div>
@@ -480,7 +480,7 @@
                 <div class="w-11 h-6 bg-neutral-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-neutral-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
               </label>
             </div>
-            
+
             <div class="flex items-center justify-between">
               <div>
                 <div class="font-medium text-neutral-800">Promotions et offres</div>
@@ -497,7 +497,7 @@
         <!-- Security -->
         <div class="bg-white rounded-xl shadow-soft p-6">
           <h3 class="text-lg font-semibold text-neutral-800 mb-6">Sécurité</h3>
-          
+
           <div class="space-y-4">
             <button class="w-full text-left p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors duration-200">
               <div class="flex items-center justify-between">
@@ -510,7 +510,7 @@
                 </svg>
               </div>
             </button>
-            
+
             <button class="w-full text-left p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors duration-200">
               <div class="flex items-center justify-between">
                 <div>
@@ -531,7 +531,7 @@
         <!-- Account Actions -->
         <div class="bg-white rounded-xl shadow-soft p-6">
           <h3 class="text-lg font-semibold text-neutral-800 mb-6">Actions du compte</h3>
-          
+
           <div class="space-y-4">
             <button class="w-full text-left p-4 border border-neutral-200 rounded-lg hover:bg-neutral-50 transition-colors duration-200">
               <div class="flex items-center justify-between">
@@ -544,7 +544,7 @@
                 </svg>
               </div>
             </button>
-            
+
             <button class="w-full text-left p-4 border border-red-200 rounded-lg hover:bg-red-50 transition-colors duration-200 text-red-600">
               <div class="flex items-center justify-between">
                 <div>
@@ -568,6 +568,7 @@ import { ref, computed, onMounted } from 'vue'
 import { downloadBookingPdfAsync } from '@/utils/pdf'
 import { getUser, updateUser, getUserBookings, cancelBooking as apiCancelBooking } from '@/services/api'
 import { authService } from '@/services/authService'
+import type { Booking } from '@/types/api'
 
 // State
 const activeTab = ref('dashboard')
@@ -639,8 +640,9 @@ const tabs = ref([
 ])
 
 // Bookings
-const bookings = ref<any[]>([])
-const recentBookings = computed(() => bookings.value.slice(0, 3).map(mapBookingToCard))
+interface BookingCard { id: number; reference: string; route: string; date: string; price: number; status: string; seats: string[]; refundAmount?: number}
+const bookings = ref<Booking[]>([])
+const recentBookings = computed<BookingCard[]>(() => bookings.value.slice(0, 3).map(mapBookingToCard))
 
 // Computed properties
 const userInitials = computed(() => {
@@ -686,22 +688,14 @@ const filteredBookings = computed(() => {
 })
 
 // Helpers
-function mapBookingToCard(b: any) {
+function mapBookingToCard(b: Booking): BookingCard {
   const from = b.schedule?.route?.departureCity?.name || ''
   const to = b.schedule?.route?.destinationCity?.name || ''
-  const dep = b.schedule?.departureAt || b.schedule?.departure_at
+  const dep = b.schedule?.departureAt || ''
   const price = Number(b.totalPrice || 0)
   const status = b.status === 'cancelled' ? 'cancelled' : (b.status === 'completed' ? 'completed' : (b.status === 'pending' ? 'pending' : 'upcoming'))
-  const seats = Array.isArray(b.passengers) ? b.passengers.map((p: any) => p.seat).filter(Boolean) : []
-  return {
-    id: b.id,
-    reference: b.reference,
-    route: `${from} → ${to}`,
-    date: dep,
-    price,
-    status,
-    seats
-  }
+  const seats = Array.isArray(b.passengers) ? b.passengers.map((p) => p.seat).filter(Boolean) : []
+  return { id: b.id, reference: b.reference, route: `${from} → ${to}` , date: dep, price, status, seats }
 }
 
 const getNextLevel = () => {
@@ -770,7 +764,7 @@ async function loadBookings(userId: number) {
 
   // Stats
   stats.value.totalTrips = bookings.value.length
-  stats.value.totalSpent = bookings.value.reduce((sum, b: any) => sum + Number(b.totalPrice || 0), 0)
+  stats.value.totalSpent = bookings.value.reduce((sum, b) => sum + Number(b.totalPrice || 0), 0)
   const counts: Record<string, number> = {}
   for (const b of bookings.value) {
     const dest = b.schedule?.route?.destinationCity?.name
@@ -782,10 +776,10 @@ async function loadBookings(userId: number) {
 
 const updatePersonalInfo = async () => {
   try {
-    const payload: any = {
+    const payload = {
       fullName: editableUserData.value.fullName,
       phone: editableUserData.value.phone,
-      gender: editableUserData.value.gender || undefined,
+      gender: (editableUserData.value.gender || undefined) as 'M' | 'F' | 'Other' | undefined,
       birthDate: editableUserData.value.birthDate || undefined
     }
     const u = await updateUser(userData.value.id, payload)
@@ -795,7 +789,7 @@ const updatePersonalInfo = async () => {
     userData.value.birthDate = u.birthDate || ''
     editableUserData.value = { ...userData.value }
     alert('Informations mises à jour avec succès !')
-  } catch (e) {
+  } catch {
     alert('Erreur lors de la mise à jour du profil')
   }
 }
@@ -816,10 +810,10 @@ const clearFilters = () => {
   }
 }
 
-const downloadBooking = async (booking: any) => {
+const downloadBooking = async (booking: BookingCard) => {
   const [from, to] = String(booking.route || '').split(' → ').map((s: string) => s.trim())
   await downloadBookingPdfAsync({
-    reference: booking.reference || booking.id,
+    reference: booking.reference || String(booking.id),
     from: from || '',
     to: to || '',
     date: booking.date,
@@ -832,7 +826,7 @@ const downloadBooking = async (booking: any) => {
 
 const isCancellingRef = ref<string | null>(null)
 
-const cancelBooking = async (booking: any) => {
+const cancelBooking = async (booking: BookingCard) => {
   if (!confirm('Confirmer l\'annulation de cette réservation ?')) return
   const reason = prompt('Motif d\'annulation (optionnel) :') || undefined
   try {
@@ -840,7 +834,7 @@ const cancelBooking = async (booking: any) => {
     await apiCancelBooking(booking.id, { reason })
     booking.status = 'cancelled'
     alert('Réservation annulée')
-  } catch (e) {
+  } catch  {
     alert('Erreur lors de l\'annulation. Veuillez réessayer.')
   } finally {
     isCancellingRef.value = null

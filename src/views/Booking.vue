@@ -5,16 +5,16 @@
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
         <div class="flex items-center justify-center">
           <div class="flex items-center space-x-4">
-            <div 
-              v-for="(step, index) in steps" 
+            <div
+              v-for="(step, index) in steps"
               :key="step.id"
               class="flex items-center"
             >
-              <div 
+              <div
                 :class="[
                   'flex items-center justify-center w-10 h-10 rounded-full border-2 transition-all duration-300',
-                  currentStep >= step.id 
-                    ? 'bg-primary-600 border-primary-600 text-white' 
+                  currentStep >= step.id
+                    ? 'bg-primary-600 border-primary-600 text-white'
                     : 'bg-white border-neutral-300 text-neutral-500'
                 ]"
               >
@@ -50,13 +50,13 @@
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                 </svg>
-                <span>{{ formatDate(route.query.date) }}</span>
+                <span>{{ formatDate(route.query.date as string) }}</span>
               </div>
               <div class="flex items-center space-x-1">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
-                <span>{{ route.query.passengers }} passager{{ route.query.passengers > 1 ? 's' : '' }}</span>
+                <span>{{ route.query.passengers }} passager{{ Number(route.query.passengers) > 1 ? 's' : '' }}</span>
               </div>
             </div>
           </div>
@@ -70,32 +70,32 @@
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
         <!-- Main Content -->
         <div class="lg:col-span-2 space-y-8">
-          
+
           <!-- Step 1: Seat Selection -->
           <div v-if="currentStep === 1" class="bg-white rounded-xl shadow-soft p-6">
             <h2 class="text-xl font-semibold text-neutral-800 mb-6">Sélection des places</h2>
-            
+
             <!-- Bus Type Selection -->
             <div class="mb-6">
               <label class="block text-sm font-medium text-neutral-700 mb-3">Type de bus</label>
               <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div 
-                  v-for="type in busTypes" 
+                <div
+                  v-for="type in busTypes"
                   :key="type.id"
                   @click="selectedBusType = type.id"
                   :class="[
                     'border-2 rounded-lg p-4 cursor-pointer transition-all duration-200',
-                    selectedBusType === type.id 
-                      ? 'border-primary-500 bg-primary-50' 
+                    selectedBusType === type.id
+                      ? 'border-primary-500 bg-primary-50'
                       : 'border-neutral-200 hover:border-primary-300'
                   ]"
                 >
                   <div class="flex items-center justify-between mb-2">
                     <span class="font-medium text-neutral-800">{{ type.name }}</span>
-                    <div 
+                    <div
                       :class="[
                         'w-4 h-4 rounded-full',
-                        type.id === 'standard' ? 'bg-primary-500' : 
+                        type.id === 'standard' ? 'bg-primary-500' :
                         type.id === 'vip' ? 'bg-gold-500' : 'bg-purple-500'
                       ]"
                     ></div>
@@ -141,15 +141,15 @@
 
                   <!-- Seats Grid -->
                   <div class="space-y-3">
-                    <div 
-                      v-for="row in seatLayout" 
+                    <div
+                      v-for="row in seatLayout"
                       :key="row.id"
                       class="flex justify-between items-center"
                     >
                       <!-- Left Seats -->
                       <div class="flex space-x-2">
-                        <div 
-                          v-for="seat in row.leftSeats" 
+                        <div
+                          v-for="seat in row.leftSeats"
                           :key="seat.number"
                           @click="toggleSeat(seat.number)"
                           :class="getSeatClass(seat)"
@@ -166,8 +166,8 @@
 
                       <!-- Right Seats -->
                       <div class="flex space-x-2">
-                        <div 
-                          v-for="seat in row.rightSeats" 
+                        <div
+                          v-for="seat in row.rightSeats"
                           :key="seat.number"
                           @click="toggleSeat(seat.number)"
                           :class="getSeatClass(seat)"
@@ -202,9 +202,9 @@
 
             <!-- Continue Button -->
             <div class="flex justify-end">
-              <button 
+              <button
                 @click="nextStep"
-                :disabled="selectedSeats.length !== parseInt(route.query.passengers)"
+                :disabled="selectedSeats.length !== passagerCount"
                 class="px-8 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-neutral-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors duration-200"
               >
                 Continuer
@@ -215,10 +215,10 @@
           <!-- Step 2: Passenger Information -->
           <div v-if="currentStep === 2" class="bg-white rounded-xl shadow-soft p-6">
             <h2 class="text-xl font-semibold text-neutral-800 mb-6">Informations des passagers</h2>
-            
+
             <div class="space-y-6">
-              <div 
-                v-for="(passenger, index) in passengerInfo" 
+              <div
+                v-for="(passenger, index) in passengerInfo"
                 :key="index"
                 class="passenger-form"
               >
@@ -228,11 +228,11 @@
                   </span>
                   Passager {{ index + 1 }} - Place {{ selectedSeats[index] }}
                 </h3>
-                
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label class="block text-sm font-medium text-neutral-700 mb-2">Nom complet *</label>
-                    <input 
+                    <input
                       v-model="passenger.fullName"
                       type="text"
                       placeholder="Nom et prénom"
@@ -242,10 +242,10 @@
                       ]"
                     />
                   </div>
-                  
+
                   <div>
                     <label class="block text-sm font-medium text-neutral-700 mb-2">Téléphone *</label>
-                    <input 
+                    <input
                       v-model="passenger.phone"
                       type="tel"
                       placeholder="+237 xxx xxx xxx"
@@ -255,17 +255,17 @@
                       ]"
                     />
                   </div>
-                  
+
                   <div>
                     <label class="block text-sm font-medium text-neutral-700 mb-2">Email</label>
-                    <input 
+                    <input
                       v-model="passenger.email"
                       type="email"
                       placeholder="email@exemple.com"
                       class="w-full px-4 py-3 border border-neutral-300 rounded-lg"
                     />
                   </div>
-                  
+
                   <div>
                     <label class="block text-sm font-medium text-neutral-700 mb-2">Pièce d'identité</label>
                     <select v-model="passenger.idType" class="w-full px-4 py-3 border border-neutral-300 rounded-lg">
@@ -275,10 +275,10 @@
                       <option value="permit">Permis de conduire</option>
                     </select>
                   </div>
-                  
+
                   <div v-if="passenger.idType" class="md:col-span-2">
                     <label class="block text-sm font-medium text-neutral-700 mb-2">Numéro de la pièce</label>
-                    <input 
+                    <input
                       v-model="passenger.idNumber"
                       type="text"
                       placeholder="Numéro de la pièce d'identité"
@@ -291,13 +291,13 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between mt-8">
-              <button 
+              <button
                 @click="previousStep"
                 class="px-6 py-3 border border-neutral-300 text-neutral-700 font-semibold rounded-lg hover:bg-neutral-50 transition-colors duration-200"
               >
                 Retour
               </button>
-              <button 
+              <button
                 @click="nextStep"
                 :disabled="!isPassengerInfoValid"
                 class="px-8 py-3 bg-primary-600 hover:bg-primary-700 disabled:bg-neutral-300 disabled:cursor-not-allowed text-white font-semibold rounded-lg transition-colors duration-200"
@@ -310,7 +310,7 @@
           <!-- Step 3: Summary -->
           <div v-if="currentStep === 3" class="bg-white rounded-xl shadow-soft p-6">
             <h2 class="text-xl font-semibold text-neutral-800 mb-6">Récapitulatif de la réservation</h2>
-            
+
             <!-- Trip Summary -->
             <div class="bg-neutral-50 rounded-lg p-4 mb-6">
               <h3 class="font-medium text-neutral-800 mb-3">Détails du voyage</h3>
@@ -321,7 +321,7 @@
                 </div>
                 <div>
                   <span class="text-neutral-600">Date:</span>
-                  <span class="ml-2 font-medium">{{ formatDate(route.query.date) }}</span>
+                  <span class="ml-2 font-medium">{{ formatDate(typeof route.query.date === 'string' ? route.query.date : '') }}</span>
                 </div>
                 <div>
                   <span class="text-neutral-600">Places:</span>
@@ -338,8 +338,8 @@
             <div class="mb-6">
               <h3 class="font-medium text-neutral-800 mb-3">Passagers</h3>
               <div class="space-y-3">
-                <div 
-                  v-for="(passenger, index) in passengerInfo" 
+                <div
+                  v-for="(passenger, index) in passengerInfo"
                   :key="index"
                   class="flex items-center justify-between p-3 bg-neutral-50 rounded-lg"
                 >
@@ -354,13 +354,13 @@
 
             <!-- Navigation Buttons -->
             <div class="flex justify-between">
-              <button 
+              <button
                 @click="previousStep"
                 class="px-6 py-3 border border-neutral-300 text-neutral-700 font-semibold rounded-lg hover:bg-neutral-50 transition-colors duration-200"
               >
                 Retour
               </button>
-              <button 
+              <button
                 @click="proceedToPayment"
                 class="px-8 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors duration-200"
               >
@@ -375,25 +375,25 @@
           <!-- Price Breakdown -->
           <div class="bg-white rounded-xl shadow-soft p-6">
             <h3 class="text-lg font-semibold text-neutral-800 mb-4">Détail des prix</h3>
-            
+
             <div class="space-y-3">
               <div class="flex justify-between">
-                <span class="text-neutral-600">{{ route.query.passengers }} billet{{ route.query.passengers > 1 ? 's' : '' }}</span>
-                <span class="font-medium">{{ (basePrice * parseInt(route.query.passengers)).toLocaleString() }} FCFA</span>
+                <span class="text-neutral-600">{{ route.query.passengers }} billet{{ passagerCount > 1 ? 's' : '' }}</span>
+                <span class="font-medium">{{ (basePriceRef * passagerCount).toLocaleString() }} FCFA</span>
               </div>
-              
+
               <div v-if="selectedBusType !== 'standard'" class="flex justify-between">
                 <span class="text-neutral-600">Supplément {{ getBusTypeName(selectedBusType) }}</span>
-                <span class="font-medium">{{ (getBusTypePrice(selectedBusType) * parseInt(route.query.passengers)).toLocaleString() }} FCFA</span>
+                <span class="font-medium">{{ (getBusTypePrice(selectedBusType) * passagerCount).toLocaleString() }} FCFA</span>
               </div>
-              
+
               <div class="flex justify-between text-sm">
                 <span class="text-neutral-600">Frais de service</span>
                 <span class="font-medium">{{ serviceFee.toLocaleString() }} FCFA</span>
               </div>
-              
+
               <hr class="my-3">
-              
+
               <div class="flex justify-between text-lg font-bold">
                 <span>Total</span>
                 <span class="text-primary-600">{{ totalPrice.toLocaleString() }} FCFA</span>
@@ -433,6 +433,12 @@ const router = useRouter()
 
 const scheduleId = computed(() => Number(route.query.routeId) || Number(route.query.scheduleId) || 0)
 
+const passagerCount =computed(() => {
+  const val  = route.query.Passagers;
+  if (Array.isArray(val)) return parseInt(val[0] || '0');
+  if (typeof val === 'string') return parseInt(val);
+  return 0;
+});
 // Steps
 const steps = ref([
   { id: 1, name: 'Sélection des places' },
@@ -471,7 +477,9 @@ const basePriceRef = ref<number>(Number(route.query.price) || 0)
 const serviceFee = 500
 
 // Seat Layout (built from backend data)
-const seatLayout = ref<Array<{ id: string; leftSeats: any[]; rightSeats: any[] }>>([])
+interface SeatCell { number: number; status: 'available' | 'selected' | 'occupied' }
+interface SeatRow { id: string; leftSeats: SeatCell[]; rightSeats: SeatCell[] }
+const seatLayout = ref<SeatRow[]>([])
 
 const selectedSeats = ref<number[]>([])
 const passengerInfo = ref<Array<{
@@ -494,7 +502,7 @@ const isPassengerInfoValid = computed(() => {
 })
 
 // Methods
-const getSeatClass = (seat: any) => {
+const getSeatClass = (seat: SeatCell) => {
   const baseClass = 'w-10 h-10 border-2 rounded cursor-pointer flex items-center justify-center text-xs font-medium transition-all duration-200'
   if (seat.status === 'occupied') return baseClass + ' bg-red-500 border-red-500 text-white cursor-not-allowed'
   if (selectedSeats.value.includes(seat.number)) return baseClass + ' bg-primary-500 border-primary-500 text-white scale-110'
@@ -520,12 +528,12 @@ const formatDate = (dateString: string) => {
 }
 
 function buildSeatLayout(capacity: number, occupied: Set<number>) {
-  const rows: Array<{ id: string; leftSeats: any[]; rightSeats: any[] }> = []
+  const rows: SeatRow[] = []
   let current = 1
   let rowIndex = 0
   while (current <= capacity) {
-    const left = [] as any[]
-    const right = [] as any[]
+    const left: SeatCell[] = []
+    const right: SeatCell[] = []
     for (let i = 0; i < 2 && current <= capacity; i++, current++) {
       left.push({ number: current, status: occupied.has(current) ? 'occupied' : 'available' })
     }
@@ -576,8 +584,8 @@ const proceedToPayment = async () => {
   }
   try {
     const payload = {
-      userId: Number((user as any).id),
-      scheduleId: scheduleId.value,
+      userId: Number((user as { id: string | number }).id),
+      scheduleId: scheduleId.value as number,
       passengers: passengerInfo.value.map((p, idx) => ({
         fullName: p.fullName,
         phone: p.phone,
@@ -599,7 +607,7 @@ const proceedToPayment = async () => {
     }
     localStorage.setItem('bookingData', JSON.stringify(bookingData))
     router.push({ name: 'Payment', query: { bookingId: String(booking.id) } })
-  } catch (e) {
+  } catch {
     alert('Erreur lors de la création de la réservation')
   }
 }

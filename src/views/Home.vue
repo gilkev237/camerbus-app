@@ -55,7 +55,7 @@
                 <!-- Date -->
                 <div class="space-y-2">
                   <label class="block text-sm font-medium text-neutral-700">Date de départ</label>
-                  <input 
+                  <input
                     v-model="searchForm.date"
                     type="date"
                     :min="today"
@@ -66,7 +66,7 @@
                 <!-- Passengers -->
                 <div class="space-y-2">
                   <label class="block text-sm font-medium text-neutral-700">Passagers</label>
-                  <select 
+                  <select
                     v-model="searchForm.passengers"
                     class="w-full px-4 py-3 rounded-lg border border-neutral-300 focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-colors"
                   >
@@ -75,7 +75,7 @@
                 </div>
               </div>
 
-              <button 
+              <button
                 type="submit"
                 class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-4 px-8 rounded-lg transition-colors duration-200 transform hover:scale-105"
               >
@@ -105,8 +105,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          <div 
-            v-for="route in popularRoutes" 
+          <div
+            v-for="route in popularRoutes"
             :key="route.id"
             class="bg-white rounded-xl shadow-soft hover:shadow-medium transition-shadow duration-300 overflow-hidden group cursor-pointer"
             @click="selectRoute(route)"
@@ -152,8 +152,8 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          <div 
-            v-for="feature in features" 
+          <div
+            v-for="feature in features"
             :key="feature.id"
             class="text-center group"
           >
@@ -190,7 +190,7 @@
               <span class="font-semibold text-neutral-800">MTN Mobile Money</span>
             </div>
           </div>
-          
+
           <div class="bg-white rounded-lg shadow-soft p-6 hover:shadow-medium transition-shadow duration-300">
             <div class="flex items-center space-x-3">
               <div class="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
@@ -235,7 +235,7 @@ const searchForm = ref({
 const today = computed(() => new Date().toISOString().split('T')[0])
 
 // Cities from API
-type City = { id: number; name: string; country: string }
+import type { City } from '@/types/api'
 const cities = ref<City[]>([])
 
 onMounted(async () => {
@@ -247,61 +247,14 @@ onMounted(async () => {
 })
 
 // Popular routes
-const popularRoutes = ref([
-  {
-    id: 1,
-    departure: 'Yaoundé',
-    destination: 'Douala',
-    duration: '3h 30min',
-    price: '3,500',
-    rating: 4.8,
-    frequency: 'Toutes les heures'
-  },
-  {
-    id: 2,
-    departure: 'Douala',
-    destination: 'Bamenda',
-    duration: '4h 15min',
-    price: '4,200',
-    rating: 4.6,
-    frequency: '6 trajets/jour'
-  },
-  {
-    id: 3,
-    departure: 'Yaoundé',
-    destination: 'Bafoussam',
-    duration: '4h 00min',
-    price: '4,000',
-    rating: 4.7,
-    frequency: '8 trajets/jour'
-  },
-  {
-    id: 4,
-    departure: 'Douala',
-    destination: 'Garoua',
-    duration: '8h 30min',
-    price: '8,500',
-    rating: 4.5,
-    frequency: '2 trajets/jour'
-  },
-  {
-    id: 5,
-    departure: 'Yaoundé',
-    destination: 'Ngaoundéré',
-    duration: '6h 45min',
-    price: '6,800',
-    rating: 4.4,
-    frequency: '4 trajets/jour'
-  },
-  {
-    id: 6,
-    departure: 'Douala',
-    destination: 'Kribi',
-    duration: '2h 30min',
-    price: '2,800',
-    rating: 4.9,
-    frequency: '5 trajets/jour'
-  }
+interface PopularRoute { id: number; departure: string; destination: string; duration: string; price: string; rating: number; frequency: string }
+const popularRoutes = ref<PopularRoute[]>([
+  { id: 1, departure: 'Yaoundé', destination: 'Douala', duration: '3h 30min', price: '3,500', rating: 4.8, frequency: 'Toutes les heures' },
+  { id: 2, departure: 'Douala', destination: 'Bamenda', duration: '4h 15min', price: '4,200', rating: 4.6, frequency: '6 trajets/jour' },
+  { id: 3, departure: 'Yaoundé', destination: 'Bafoussam', duration: '4h 00min', price: '4,000', rating: 4.7, frequency: '8 trajets/jour' },
+  { id: 4, departure: 'Douala', destination: 'Garoua', duration: '8h 30min', price: '8,500', rating: 4.5, frequency: '2 trajets/jour' },
+  { id: 5, departure: 'Yaoundé', destination: 'Ngaoundéré', duration: '6h 45min', price: '6,800', rating: 4.4, frequency: '4 trajets/jour' },
+  { id: 6, departure: 'Douala', destination: 'Kribi', duration: '2h 30min', price: '2,800', rating: 4.9, frequency: '5 trajets/jour' }
 ])
 
 // Features
@@ -355,7 +308,7 @@ const searchRoutes = () => {
   })
 }
 
-const selectRoute = (route: any) => {
+const selectRoute = (route: PopularRoute) => {
   const fromCity = cities.value.find(c => c.name.toLowerCase() === route.departure.toLowerCase())
   const toCity = cities.value.find(c => c.name.toLowerCase() === route.destination.toLowerCase())
   searchForm.value.departureCityId = fromCity?.id || ''

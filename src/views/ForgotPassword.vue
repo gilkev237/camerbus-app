@@ -13,13 +13,13 @@
           {{ step === 'email' ? 'Mot de passe oublié ?' : 'Réinitialiser le mot de passe' }}
         </h2>
         <p class="mt-2 text-sm text-neutral-600">
-          {{ step === 'email' 
-              ? 'Entrez votre adresse email pour recevoir un lien de réinitialisation' 
-              : 'Entrez votre nouveau mot de passe' 
+          {{ step === 'email'
+              ? 'Entrez votre adresse email pour recevoir un lien de réinitialisation'
+              : 'Entrez votre nouveau mot de passe'
           }}
         </p>
       </div>
-      
+
       <div class="bg-white py-8 px-6 shadow-soft rounded-xl">
         <!-- Step 1: Enter Email -->
         <form v-if="step === 'email'" @submit.prevent="sendResetEmail" class="space-y-6">
@@ -161,12 +161,12 @@
                 </svg>
               </button>
             </div>
-            
+
             <!-- Password Strength Indicator -->
             <div class="mt-2">
               <div class="flex space-x-1">
-                <div 
-                  v-for="i in 4" 
+                <div
+                  v-for="i in 4"
                   :key="i"
                   class="h-1 flex-1 rounded-full"
                   :class="{
@@ -238,7 +238,7 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
             </svg>
           </div>
-          
+
           <div>
             <h3 class="text-lg font-medium text-neutral-900 mb-2">Mot de passe réinitialisé !</h3>
             <p class="text-sm text-neutral-600">
@@ -294,10 +294,10 @@ const sendResetEmail = async () => {
 
   try {
     const result = await authService.forgotPassword(form.value.email)
-    
+
     if (result.success) {
       successMessage.value = result.message
-      
+
       // Simulation: après 3 secondes, passer à l'étape suivante pour la démo
       setTimeout(() => {
         step.value = 'reset'
@@ -306,7 +306,7 @@ const sendResetEmail = async () => {
     } else {
       errorMessage.value = result.message
     }
-  } catch (error) {
+  } catch {
     errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
   } finally {
     isLoading.value = false
@@ -333,7 +333,7 @@ const resetPassword = async () => {
     } else {
       errorMessage.value = result.message
     }
-  } catch (error) {
+  } catch {
     errorMessage.value = 'Une erreur est survenue. Veuillez réessayer.'
   } finally {
     isLoading.value = false

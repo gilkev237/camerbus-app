@@ -45,11 +45,11 @@
               </div>
               <div class="flex justify-between">
                 <span class="text-neutral-600">Date:</span>
-                <span class="font-medium">{{ formatDate(confirmationData.route?.date) }}</span>
+                <span class="font-medium">{{ formatDate(confirmationData.route?.date ?? '') }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-neutral-600">Type de bus:</span>
-                <span class="font-medium">{{ getBusTypeName(confirmationData.busType) }}</span>
+                <span class="font-medium">{{ getBusTypeName(confirmationData.busType ?? '') }}</span>
               </div>
               <div class="flex justify-between">
                 <span class="text-neutral-600">Places:</span>
@@ -244,7 +244,8 @@ import { bookingService } from '@/services/bookingService'
 const route = useRoute()
 const router = useRouter()
 
-const confirmationData = ref<any>({})
+interface ConfirmationData { bookingReference?: string; totalPrice: number; route?: { from?: string; to?: string; date?: string }; busType?: string; seats?: string[] | number[]; passengers?: Array<{ fullName: string; phone: string }> }
+const confirmationData = ref<ConfirmationData>({ totalPrice: 0 })
 
 // Methods
 const getBusTypeName = (typeId: string) => {
@@ -276,10 +277,10 @@ const downloadTicket = async () => {
     from: data.route?.from || '',
     to: data.route?.to || '',
     date: data.route?.date || new Date().toISOString(),
-    seats: (data.seats || []).map((s: any) => String(s)),
+    seats: (data.seats || []).map((s) => String(s)),
     totalPrice: data.totalPrice,
     busType: data.busType ? getBusTypeName(data.busType) : undefined,
-    passengers: (data.passengers || []).map((p: any) => ({ fullName: p.fullName, phone: p.phone }))
+    passengers: (data.passengers || []).map((p) => ({ fullName: p.fullName, phone: p.phone }))
   })
 }
 

@@ -238,7 +238,7 @@ class BookingService {
       }
 
       if (filters.destination) {
-        userBookings = userBookings.filter(b => 
+        userBookings = userBookings.filter(b =>
           b.destination.toLowerCase().includes(filters.destination!.toLowerCase()) ||
           b.departure.toLowerCase().includes(filters.destination!.toLowerCase())
         )
@@ -301,7 +301,7 @@ class BookingService {
     await new Promise(resolve => setTimeout(resolve, 400))
 
     const userBookings = this.bookings.filter(booking => booking.userId === userId)
-    
+
     const totalBookings = userBookings.length
     const completedTrips = userBookings.filter(b => b.status === 'completed').length
     const cancelledBookings = userBookings.filter(b => b.status === 'cancelled').length
@@ -314,7 +314,7 @@ class BookingService {
     userBookings.forEach(booking => {
       destinations[booking.destination] = (destinations[booking.destination] || 0) + 1
     })
-    const favoriteDestination = Object.keys(destinations).reduce((a, b) => 
+    const favoriteDestination = Object.keys(destinations).reduce((a, b) =>
       destinations[a] > destinations[b] ? a : b, Object.keys(destinations)[0] || 'Aucune'
     )
 
@@ -333,7 +333,7 @@ class BookingService {
     await new Promise(resolve => setTimeout(resolve, 1000))
 
     const booking = this.bookings.find(b => b.id === bookingId)
-    
+
     if (!booking) {
       return { success: false, message: 'Réservation introuvable' }
     }
@@ -375,7 +375,7 @@ class BookingService {
     await new Promise(resolve => setTimeout(resolve, 500))
 
     const booking = this.bookings.find(b => b.id === bookingId)
-    
+
     if (!booking) {
       return { success: false, message: 'Réservation introuvable' }
     }
@@ -399,7 +399,7 @@ class BookingService {
     await new Promise(resolve => setTimeout(resolve, 800))
 
     const booking = this.bookings.find(b => b.id === bookingId)
-    
+
     if (!booking) {
       return { success: false, message: 'Réservation introuvable' }
     }
@@ -443,7 +443,7 @@ class BookingService {
     await new Promise(resolve => setTimeout(resolve, 2000))
 
     const booking = this.bookings.find(b => b.id === bookingId)
-    
+
     if (!booking) {
       return { success: false, message: 'Réservation introuvable' }
     }

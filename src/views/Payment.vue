@@ -270,7 +270,7 @@
                 </div>
                 <div class="text-sm text-neutral-600">
                   <div>{{ bookingData.route?.from }} → {{ bookingData.route?.to }}</div>
-                  <div>{{ formatDate(bookingData.route?.date) }}</div>
+                  <div>{{ formatDate(bookingData.route?.date ?? '') }}</div>
                 </div>
               </div>
 
@@ -281,7 +281,7 @@
                   <span class="text-sm text-neutral-600">{{ bookingData.seats?.join(', ') }}</span>
                 </div>
                 <div class="text-sm text-neutral-600">
-                  Type: {{ getBusTypeName(bookingData.busType) }}
+                  Type: {{ getBusTypeName(bookingData.busType ?? '') }}
                 </div>
               </div>
 
@@ -346,13 +346,16 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getBooking, createPayment } from '@/services/api'
+import type { Passenger } from '@/services/bookingService'
 
 const router = useRouter()
 const route = useRoute()
 
 // Payment state
-const selectedPaymentMethod = ref('')
-const bookingData = ref<any>({})
+type Method = 'mtn' | 'orange' | 'card'
+const selectedPaymentMethod = ref<Method | ''>('')
+interface BookingPaymentData { bookingId?: number; totalPrice: number; seats?: string[]; passengers?: Array<{ fullName: string; phone: string }>; route?: { from?: string; to?: string; date?: string }; busType?: string }
+const bookingData = ref<BookingPaymentData>({ totalPrice: 0 })
 
 const paymentForm = ref({
   mtnNumber: '',
@@ -364,7 +367,6 @@ const paymentForm = ref({
 })
 
 // Computed
-type Method = 'mtn' | 'orange' | 'card'
 const canPay = computed(() => {
   if (!selectedPaymentMethod.value) return false
   switch (selectedPaymentMethod.value as Method) {
@@ -426,8 +428,8 @@ const processPayment = async () => {
         date: fresh.schedule?.departureAt || fresh.schedule?.departure_at
       },
       busType: fresh.schedule?.bus?.type,
-      seats: Array.isArray(fresh.passengers) ? fresh.passengers.map((p: any) => p.seat) : [],
-      passengers: Array.isArray(fresh.passengers) ? fresh.passengers.map((p: any) => ({ fullName: p.fullName, phone: p.phone })) : []
+      seats: Array.isArray(fresh.passengers) ? (fresh.passengers as Passenger[]).map((p) => p.seat) : [],
+      passengers: Array.isArray(fresh.passengers) ? (fresh.passengers as Passenger[]).map((p) => ({ fullName: p.name, phone: p.phone })) : [],
     }
 
     localStorage.setItem('confirmationData', JSON.stringify(confirmationData))
@@ -446,8 +448,8 @@ onMounted(async () => {
       bookingData.value = {
         bookingId: b.id,
         totalPrice: b.totalPrice,
-        seats: Array.isArray(b.passengers) ? b.passengers.map((p: any) => p.seat) : [],
-        passengers: Array.isArray(b.passengers) ? b.passengers.map((p: any) => ({ fullName: p.fullName, phone: p.phone })) : [],
+        seats: Array.isArray(b.passengers) ? (b.passengers as Passenger[]).map((p) => p.seat) : [],
+        passengers: Array.isArray(b.passengers) ? (b.passengers as Passenger[]).map((p) => ({ fullName: p.name as string, phone: p.phone as string })) : [],
         route: {
           from: b.schedule?.route?.departureCity?.name,
           to: b.schedule?.route?.destinationCity?.name,
