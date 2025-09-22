@@ -14,7 +14,7 @@
           Accédez à votre compte CamerBus
         </p>
       </div>
-      
+
       <div class="bg-white py-8 px-6 shadow-soft rounded-xl">
         <!-- Alert Messages -->
         <div v-if="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -52,7 +52,7 @@
               </div>
             </div>
           </div>
-          
+
           <div>
             <label for="password" class="block text-sm font-medium text-neutral-700">
               Mot de passe
@@ -192,6 +192,7 @@ const login = async () => {
       errorMessage.value = result.message
     }
   } catch (error) {
+    console.error(error)
     errorMessage.value = 'Une erreur est survenue lors de la connexion'
   } finally {
     isLoading.value = false

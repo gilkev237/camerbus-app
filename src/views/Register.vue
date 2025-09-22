@@ -14,7 +14,7 @@
           Rejoignez CamerBus pour voyager facilement
         </p>
       </div>
-      
+
       <div class="bg-white py-8 px-6 shadow-soft rounded-xl">
         <!-- Alert Messages -->
         <div v-if="errorMessage" class="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-6">
@@ -422,6 +422,7 @@ const register = async () => {
       errorMessage.value = result.message
     }
   } catch (error) {
+    console.error(error)
     errorMessage.value = 'Une erreur est survenue lors de l\'inscription'
   } finally {
     isLoading.value = false

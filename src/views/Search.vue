@@ -13,7 +13,7 @@
               {{ searchQuery.from && searchQuery.to ? `de ${searchQuery.from} à ${searchQuery.to}` : '' }}
             </p>
           </div>
-          
+
           <!-- Quick Search -->
           <div class="flex items-center space-x-4">
             <div class="flex items-center space-x-2">
@@ -23,7 +23,7 @@
                 <option value="duration">Durée</option>
               </select>
             </div>
-            <button 
+            <button
               @click="showFilters = !showFilters"
               class="inline-flex items-center px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
             >
@@ -49,9 +49,9 @@
             </div>
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Prix maximum</label>
-              <input 
-                v-model="filters.maxPrice" 
-                type="number" 
+              <input
+                v-model="filters.maxPrice"
+                type="number"
                 placeholder="FCFA"
                 class="w-full px-3 py-2 border border-neutral-300 rounded-lg"
               />
@@ -66,7 +66,7 @@
               </select>
             </div>
             <div class="flex items-end">
-              <button 
+              <button
                 @click="clearFilters"
                 class="w-full px-4 py-2 bg-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-300 transition-colors"
               >
@@ -81,8 +81,8 @@
     <!-- Results -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="space-y-6">
-        <div 
-          v-for="route in filteredRoutes" 
+        <div
+          v-for="route in filteredRoutes"
           :key="route.id"
           class="bg-white rounded-xl shadow-soft hover:shadow-medium transition-shadow duration-300 overflow-hidden"
         >
@@ -95,7 +95,7 @@
                     <div class="text-2xl font-bold text-neutral-800">{{ route.departureTime }}</div>
                     <div class="text-sm text-neutral-600">{{ route.departure }}</div>
                   </div>
-                  
+
                   <div class="flex-1 flex items-center">
                     <div class="w-full relative">
                       <div class="border-t-2 border-neutral-300"></div>
@@ -106,7 +106,7 @@
                       </div>
                     </div>
                   </div>
-                  
+
                   <div class="text-center">
                     <div class="text-2xl font-bold text-neutral-800">{{ route.arrivalTime }}</div>
                     <div class="text-sm text-neutral-600">{{ route.destination }}</div>
@@ -142,8 +142,8 @@
                     Plus que {{ route.availability }} places
                   </div>
                 </div>
-                
-                <button 
+
+                <button
                   @click="selectRoute(route)"
                   class="px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors duration-200 min-w-[120px]"
                   :disabled="route.availability === 0"
@@ -162,8 +162,8 @@
           </svg>
           <h3 class="text-lg font-semibold text-neutral-800 mb-2">Aucun trajet trouvé</h3>
           <p class="text-neutral-600 mb-4">Essayez de modifier vos critères de recherche</p>
-          <router-link 
-            to="/" 
+          <router-link
+            to="/"
             class="inline-flex items-center px-6 py-3 bg-primary-600 hover:bg-primary-700 text-white font-semibold rounded-lg transition-colors duration-200"
           >
             Nouvelle recherche
@@ -203,8 +203,24 @@ const filters = ref({
   busType: ''
 })
 
+import type { Schedule } from '@/types/api'
+
 // Results from backend
-const routes = ref<any[]>([])
+interface RouteCard {
+  id: number
+  departure: string
+  destination: string
+  departureTime: string
+  arrivalTime: string
+  duration: string
+  price: string
+  numericPrice: number
+  busType: string
+  rating: number
+  availability: number
+  company: string
+}
+const routes = ref<RouteCard[]>([])
 
 async function load() {
   if (!searchQuery.value.fromId || !searchQuery.value.toId) return
@@ -214,13 +230,13 @@ async function load() {
       destinationCityId: searchQuery.value.toId,
       date: searchQuery.value.date,
     })
-    routes.value = data.map((s: any) => ({
+    routes.value = (data as Schedule[]).map((s) => ({
       id: s.id,
       departure: s.route?.departureCity?.name || searchQuery.value.from,
       destination: s.route?.destinationCity?.name || searchQuery.value.to,
-      departureTime: new Date(s.departureAt || s.departure_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      arrivalTime: new Date(s.arrivalAt || s.arrival_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      duration: calcDuration(s.departureAt || s.departure_at, s.arrivalAt || s.arrival_at),
+      departureTime: new Date(s.departureAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      arrivalTime: new Date(s.arrivalAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      duration: calcDuration(s.departureAt, s.arrivalAt),
       price: (s.price ?? s.route?.basePrice ?? 0).toLocaleString('en-US'),
       numericPrice: Number(s.price ?? s.route?.basePrice ?? 0),
       busType: s.bus?.type || 'Standard',
@@ -249,7 +265,7 @@ const filteredRoutes = computed(() => {
 
   // Filter by route if specified
   if (searchQuery.value.from && searchQuery.value.to) {
-    filtered = filtered.filter(r => 
+    filtered = filtered.filter(r =>
       r.departure.toLowerCase() === searchQuery.value.from.toLowerCase() &&
       r.destination.toLowerCase() === searchQuery.value.to.toLowerCase()
     )
@@ -309,7 +325,7 @@ const clearFilters = () => {
   }
 }
 
-const selectRoute = (selectedRoute: any) => {
+const selectRoute = (selectedRoute: RouteCard) => {
   router.push({
     name: 'Booking',
     query: {

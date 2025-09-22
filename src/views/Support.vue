@@ -35,7 +35,7 @@
                     </p>
                   </div>
                 </div>
-                <button 
+                <button
                   @click="toggleChat"
                   class="p-2 hover:bg-white/10 rounded-lg transition-colors"
                 >
@@ -48,13 +48,13 @@
 
             <!-- Chat Messages -->
             <div class="h-96 overflow-y-auto p-4 space-y-4" ref="chatContainer">
-              <div 
-                v-for="message in messages" 
+              <div
+                v-for="message in messages"
                 :key="message.id"
                 class="flex"
                 :class="{'justify-end': message.sender === 'user', 'justify-start': message.sender === 'support'}"
               >
-                <div 
+                <div
                   class="max-w-xs lg:max-w-md px-4 py-2 rounded-lg"
                   :class="{
                     'bg-primary-600 text-white': message.sender === 'user',
@@ -101,7 +101,7 @@
 
           <!-- Quick Actions -->
           <div class="mt-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <button 
+            <button
               v-for="action in quickActions"
               :key="action.title"
               @click="sendQuickMessage(action.message)"
@@ -131,7 +131,7 @@
                   <p class="text-sm text-neutral-600">Lun-Ven 8h-18h</p>
                 </div>
               </div>
-              
+
               <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                   <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -196,7 +196,7 @@
             <h2 class="text-2xl font-display font-bold text-neutral-900 mb-4">
               Questions Fréquemment Posées
             </h2>
-            
+
             <!-- Search FAQ -->
             <div class="relative">
               <input
@@ -229,8 +229,8 @@
 
           <div class="p-6">
             <div class="space-y-4">
-              <div 
-                v-for="faq in filteredFAQs" 
+              <div
+                v-for="faq in filteredFAQs"
                 :key="faq.id"
                 class="border border-neutral-200 rounded-lg overflow-hidden"
               >
@@ -239,17 +239,17 @@
                   class="w-full p-4 text-left bg-neutral-50 hover:bg-neutral-100 transition-colors flex items-center justify-between"
                 >
                   <span class="font-medium text-neutral-900">{{ faq.question }}</span>
-                  <svg 
+                  <svg
                     class="w-5 h-5 text-neutral-500 transition-transform"
                     :class="{'rotate-180': faq.isOpen}"
-                    fill="none" 
-                    stroke="currentColor" 
+                    fill="none"
+                    stroke="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
                   </svg>
                 </button>
-                <div 
+                <div
                   v-if="faq.isOpen"
                   class="p-4 bg-white border-t border-neutral-200"
                 >
@@ -272,7 +272,7 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 12h6m-6-4h6m2 5.291A7.962 7.962 0 0112 15c-2.34 0-4.29-1.01-5.824-2.562"/>
               </svg>
               <p class="text-neutral-600">Aucun résultat trouvé pour votre recherche.</p>
-              <button 
+              <button
                 @click="startChat"
                 class="mt-4 btn-primary"
               >
@@ -289,27 +289,27 @@
           <h2 class="text-2xl font-display font-bold text-neutral-900 mb-6">
             Formulaire de Contact
           </h2>
-          
+
           <form @submit.prevent="submitContactForm" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Nom complet</label>
               <input v-model="contactForm.name" type="text" required class="input-field" />
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Email</label>
               <input v-model="contactForm.email" type="email" required class="input-field" />
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Téléphone</label>
               <input v-model="contactForm.phone" type="tel" class="input-field" />
             </div>
-            
+
             <div>
               <label class="block text-sm font-medium text-neutral-700 mb-2">Sujet</label>
               <select v-model="contactForm.subject" required class="input-field">
-                <option value="">S��lectionnez un sujet</option>
+                <option value="">Sélectionnez un sujet</option>
                 <option value="reservation">Problème de réservation</option>
                 <option value="payment">Problème de paiement</option>
                 <option value="refund">Demande de remboursement</option>
@@ -317,21 +317,21 @@
                 <option value="other">Autre</option>
               </select>
             </div>
-            
+
             <div class="lg:col-span-2">
               <label class="block text-sm font-medium text-neutral-700 mb-2">Message</label>
-              <textarea 
-                v-model="contactForm.message" 
-                rows="4" 
-                required 
+              <textarea
+                v-model="contactForm.message"
+                rows="4"
+                required
                 class="input-field"
                 placeholder="Décrivez votre problème ou votre question..."
               ></textarea>
             </div>
-            
+
             <div class="lg:col-span-2">
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 class="btn-primary w-full sm:w-auto"
                 :disabled="isSubmitting"
               >
@@ -352,7 +352,7 @@ import { ref, computed, nextTick, reactive } from 'vue'
 const isOnline = ref(true)
 const newMessage = ref('')
 const isTyping = ref(false)
-const chatContainer = ref<HTMLElement>()
+const chatContainer = ref<HTMLElement | null>(null)
 
 interface Message {
   id: number
@@ -468,8 +468,8 @@ const filteredFAQs = computed(() => {
 
   if (searchQuery.value) {
     const query = searchQuery.value.toLowerCase()
-    filtered = filtered.filter(faq => 
-      faq.question.toLowerCase().includes(query) || 
+    filtered = filtered.filter(faq =>
+      faq.question.toLowerCase().includes(query) ||
       faq.answer.toLowerCase().includes(query)
     )
   }
@@ -507,16 +507,16 @@ const sendMessage = async () => {
       'C\'est une excellente question ! Permettez-moi de vous donner plus d\'informations.',
       'Je vais transférer votre demande au service approprié qui vous répondra rapidement.'
     ]
-    
+
     const supportMessage: Message = {
       id: Date.now() + 1,
       sender: 'support',
       text: responses[Math.floor(Math.random() * responses.length)],
       timestamp: new Date()
     }
-    
+
     messages.value.push(supportMessage)
-    
+
     nextTick(() => {
       if (chatContainer.value) {
         chatContainer.value.scrollTop = chatContainer.value.scrollHeight
@@ -579,6 +579,7 @@ const submitContactForm = async () => {
 
     alert('Votre message a été envoyé avec succès ! Notre équipe vous répondra sous peu.')
   } catch (e) {
+    console.error(e)
     alert('Échec de l\'envoi du message. Réessayez plus tard.')
   } finally {
     isSubmitting.value = false
